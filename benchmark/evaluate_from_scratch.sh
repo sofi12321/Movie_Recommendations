@@ -18,4 +18,4 @@ cd ../../benchmark/data
 gdown https://drive.google.com/uc?id=1UYSvHSjFj__xB0CJrskIdfW0bSZXwut9
 
 cd ..
-python evaluate.py
+python benchmarkevaluate.py
