@@ -46,7 +46,7 @@ def evaluate_ratings_recommendations(pred, true_y):
     print("RMSE:", mean_squared_error(true_y, pred, squared=False))
 
 
-def recommend_movies(user_id, ua_base, ua_test, train_dataset_columns, device, k=5):
+def recommend_movies(user_id, ua_base, ua_test, train_dataset_columns, device, processed_movies, processed_users,movies, k=5):
     """
     Print top k movies that are most relevant to a user with user_id.
     Predict movies unseen by user before both in train and test data
@@ -79,7 +79,7 @@ def recommend_movies(user_id, ua_base, ua_test, train_dataset_columns, device, k
         print(movies.loc[ind, "movie_title"])
 
 
-def get_model(model_path):
+def get_model(model_path, device):
     model = torch.nn.Sequential(
         torch.nn.Linear(in_features=426, out_features=150),
         torch.nn.LeakyReLU(),
@@ -91,7 +91,8 @@ def get_model(model_path):
         torch.nn.Sigmoid()
     )
 
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    model = model.to(device)
     model.eval()
     return model
 
@@ -100,9 +101,8 @@ if __name__ == "__main__":
     set_seed(21)
 
     # Load pretrained model
-    model = get_model("models/model.pt")
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    model = model.to(device)
+    model = get_model("models/model.pt", device)
 
     # Preprocessed dataset on which calculate metrics
     # Used ua_test from MovieLens 100K
@@ -112,17 +112,25 @@ if __name__ == "__main__":
     pred = predict(model, dataset.drop("rating", axis=1).loc[1:3], device)
 
     print("Evaluation of initial ratings:")
-    evaluate_ratings_recomendations(pred * 4 + 1, dataset.loc[1:3, "rating"].values + 1)
+    evaluate_ratings_recommendations(pred * 4 + 1, dataset.loc[1:3, "rating"].values + 1)
     print()
     print("Evaluation of normalized ratings:")
-    evaluate_ratings_recomendations(pred, dataset.loc[1:3, "rating"].values / 4)
+    evaluate_ratings_recommendations(pred, dataset.loc[1:3, "rating"].values / 4)
     print()
 
     # Initial train dataset, used to avoid prediction of already seen movie
-    ua_base = pd.read_csv("ml-100k/ua.base", sep="\t", header=None, names=["user_id", "item_id", "rating", "timestamp"])
+    ua_base = pd.read_csv("data/raw/ua.base", sep="\t", header=None, names=["user_id", "item_id", "rating", "timestamp"])
     # Initial validation dataset, used to avoid prediction of already seen movie
-    ua_test = pd.read_csv("ml-100k/ua.test", sep="\t", header=None, names=["user_id", "item_id", "rating", "timestamp"])
+    ua_test = pd.read_csv("data/raw/ua.test", sep="\t", header=None, names=["user_id", "item_id", "rating", "timestamp"])
     # Processed dataset columns, used to sort columns in a right way to model input
-    train_dataset_columns = pd.read_csv("train_dataset.csv", index_col=0).drop("rating", axis=1).columns
+    train_dataset_columns = pd.read_csv("data/interim/train_dataset.csv", index_col=0).drop("rating", axis=1).columns
 
-    recommend_movies(21, ua_base, ua_test, train_dataset_columns, device, k=10)
+    # Download preprocessed movies and user info to run predictions
+    processed_movies = pd.read_csv("data/interim/processed_movies.csv", index_col=0)
+    processed_users = pd.read_csv("data/interim/processed_users.csv", index_col=0)
+    # Download movies data to show movies names
+    genres = pd.read_csv("data/raw/u.genre",sep="|", header=None, index_col=1)
+    movies_columns = ["movie_title", "release_date", "video_release_date", "IMDB_URL"] + genres.index.astype(str).tolist()
+    movies = pd.read_csv("data/raw/u.item",sep="|", header=None, index_col=0, names=movies_columns,encoding='latin-1')
+
+    recommend_movies(21, ua_base, ua_test, train_dataset_columns, device, processed_movies, processed_users, movies, k=10)
