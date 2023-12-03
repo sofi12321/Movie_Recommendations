@@ -48,6 +48,13 @@ Install requirements before start of the work
 ```python
 pip install requirements.txt
 ```
+## Start from scratch
+To see results of evaluation and recommendations for user 21:
+
+```
+git clone https://github.com/sofi12321/Movie_Recommendations.git
+sh Movie_Recommendations/benchmark/evaluate_from_scratch.sh
+```
 
 ## Data Description
 
@@ -88,14 +95,15 @@ cd Movie_Recommendations/benchmark/data
 gdown https://drive.google.com/uc?id=1UYSvHSjFj__xB0CJrskIdfW0bSZXwut9
 ```
 
-### Run model
+### Evaluate the model
 
-Let's evaluate the model and look at recomendations. Please, make sure that all datasets are downloaded in the nedeed directories before running the evaluation process.
+Let's evaluate the model and look at recomendations. 
 
+Please, make sure that all datasets are downloaded in the nedeed directories before running the evaluation process:
 ```
 python benchmark/evaluate.py
 ```
-
+This will run evaluation on the dataset from benchmark/data/dataset.csv and show output for the user with id 21 (specified in a recommend_movies(user_id, ...)).
 
 ### References
 
