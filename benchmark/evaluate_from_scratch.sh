@@ -17,5 +17,5 @@ gdown https://drive.google.com/uc?id=1g3SHTa_lNFtP8YtM7jrSGdfeau4RfrsL
 cd ../../benchmark/data
 gdown https://drive.google.com/uc?id=1UYSvHSjFj__xB0CJrskIdfW0bSZXwut9
 
-cd ..
-python benchmarkevaluate.py
+cd ../..
+python benchmark/evaluate.py
