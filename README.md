@@ -11,13 +11,6 @@ s.zaitseva@innopolis.university
 
 Create a Movie Recommender System that will suggest to a user some movies unseen before by him/her.
 
-## Data Description
-
-Implementation based on MovieLens 100K dataset consisting user ratings to movies, user and movie information.
-
-Initial data may be found by link: https://grouplens.org/datasets/movielens/100k/
-
-
 ## Repository structure
 
 ```
@@ -54,6 +47,40 @@ Install requirements before start of the work
 
 ```python
 pip install requirements.txt
+```
+
+## Data Description
+
+Implementation based on MovieLens 100K dataset consisting user ratings to movies, user and movie information.
+
+Initial data may be found by link: https://grouplens.org/datasets/movielens/100k/
+
+### Download data
+
+#### MovieLens 100k - initial data
+
+```python
+wget https://files.grouplens.org/datasets/movielens/ml-100k.zip
+unzip ml-100k.zip
+mv ml-100k/ua.base Movie_Recommendations/data/raw
+mv ml-100k/ua.test Movie_Recommendations/data/raw
+```
+
+#### Preprocessed datasets
+Step-by-step preprocessing is shown in notebooks/1_data_exploration_vizualization_preprocessing.ipynb
+
+```python
+cd Movie_Recommendations/data/interim
+gdown https://drive.google.com/uc?id=1VLrWudGAGcQDRHiKDx-T72XfAmU5FUdY
+gdown https://drive.google.com/uc?id=19GAIyyOM1TYTWmMa99XFHCOpwcaFLKGB
+```
+
+#### Dataset for evaluation
+Preprocessed by the same steps from notebooks/1_data_exploration_vizualization_preprocessing.ipynb
+
+```python
+cd Movie_Recommendations/benchmark/data
+gdown https://drive.google.com/uc?id=1UYSvHSjFj__xB0CJrskIdfW0bSZXwut9
 ```
 
 ### Run model
